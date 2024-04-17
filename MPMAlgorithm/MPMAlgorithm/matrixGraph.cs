@@ -13,7 +13,7 @@ namespace MPMAlgorithm
                 for (var j = 0; j < vertexNumber; j++)
                 {
                     var randomNum = random.NextDouble();
-                    if (randomNum > possibility)
+                    if (randomNum > possibility || i == j)
                     {
                         matrix[i, j] = 0;
                         continue;

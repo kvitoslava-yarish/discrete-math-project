@@ -41,7 +41,7 @@ namespace MPMAlgorithm
                 for (var j = 0; j < vertexNumber; j++)
                 {
                     var randomNum = random.NextDouble();
-                    if (randomNum > possibility) continue;
+                    if (randomNum > possibility || i == j) continue;
                     var weight = random.Next(1, maxWeight);
                     AddEdge(i, j, weight);
                 }
