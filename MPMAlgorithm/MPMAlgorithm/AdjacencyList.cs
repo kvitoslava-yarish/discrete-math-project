@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+
 namespace MPMAlgorithm
 {
-    public class Node // Подання графу у вигляді списків суміжності
+    public class AdjacencyList // Подання графу у вигляді списків суміжності
     {
-        private Dictionary<int, List<Tuple<int, int>>> _adjacencyList;
-
-        public Node()
-        {
-            _adjacencyList = new Dictionary<int, List<Tuple<int, int>>>();
-        }
+        private Dictionary<int, List<int[]>> _adjacencyList = new Dictionary<int, List<int[]>>();
 
         private void AddVertex(int vertex)
         {
             if (!_adjacencyList.ContainsKey(vertex))
             {
-                _adjacencyList[vertex] = new List<Tuple<int, int>>();
+                _adjacencyList[vertex] = new List<int[]>();
             }
         }
-
         private void AddEdge(int start, int destination, int weight)
         {
             if (!_adjacencyList.ContainsKey(start))
@@ -30,7 +26,7 @@ namespace MPMAlgorithm
             {
                 AddVertex(destination);
             }
-            _adjacencyList[start].Add(new Tuple<int, int>(destination, weight));
+            _adjacencyList[start].Add(new int[] {destination, weight});
         }
 
         public void GenerationGraph(double possibility, int vertexNumber, int maxWeight)
@@ -45,6 +41,14 @@ namespace MPMAlgorithm
                     var weight = random.Next(1, maxWeight);
                     AddEdge(i, j, weight);
                 }
+            }
+        }
+
+        public void EditorEdge(int start, int destination, int flow)
+        {
+            foreach (var edge in _adjacencyList[start].Where(edge => edge[0] == destination))
+            {
+                edge[1] -= flow;
             }
         }
     }
