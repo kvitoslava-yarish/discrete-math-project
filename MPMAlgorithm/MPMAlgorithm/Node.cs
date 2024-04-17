@@ -35,13 +35,14 @@ namespace MPMAlgorithm
 
         public void GenerationGraph(double possibility, int vertexNumber, int maxWeight)
         {
+            var random = new Random();
             for (var i = 0; i < vertexNumber; i++)
             {
                 for (var j = 0; j < vertexNumber; j++)
                 {
-                    var random = new Random().NextDouble();
-                    if (random > possibility) continue;
-                    var weight = new Random().Next(1, maxWeight);
+                    var randomNum = random.NextDouble();
+                    if (randomNum > possibility) continue;
+                    var weight = random.Next(1, maxWeight);
                     AddEdge(i, j, weight);
                 }
             }
