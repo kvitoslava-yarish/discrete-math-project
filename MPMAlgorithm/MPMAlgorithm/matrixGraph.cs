@@ -7,12 +7,14 @@ namespace MPMAlgorithm
         private int[,] _matrix;
         private int _vertexNumber;
         private Random _random;
+        private int _maxWeight;
 
         public MatrixGraph(int vertexNumber, double possibility, int maxWeight)
         {
             _vertexNumber = vertexNumber;
             _random = new Random();
             _matrix = new int[vertexNumber, vertexNumber];
+            _maxWeight = maxWeight;
             GenerateGraph(possibility, maxWeight);
         }
 
@@ -37,6 +39,19 @@ namespace MPMAlgorithm
         public void EditorEdges(int start, int destination, int flow)
         {
             _matrix[start, destination] -= flow;
+        }
+
+        public void PrintGraph()
+        {
+            for (var i = 0; i < _vertexNumber; i++)
+            {
+                Console.Write("[ ");
+                for (var j = 0; j < _vertexNumber; j++)
+                {
+                    Console.Write($"{_matrix[i, j]} ");
+                }
+                Console.Write("]\n");
+            }
         }
     }
 }

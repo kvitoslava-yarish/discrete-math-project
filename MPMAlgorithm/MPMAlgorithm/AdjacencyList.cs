@@ -51,5 +51,18 @@ namespace MPMAlgorithm
                 edge[1] -= flow;
             }
         }
+
+        public void PrintGraph()
+        {
+            foreach (var vertex in _adjacencyList)
+            {
+                Console.Write($"Node {vertex.Key}: ");
+                foreach (var edge in vertex.Value)
+                {
+                    Console.Write($"({edge[0]}:{edge[1]});");
+                }
+                Console.WriteLine();
+            }
+        }
     }
 }

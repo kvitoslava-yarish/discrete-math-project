@@ -6,9 +6,8 @@ namespace MPMAlgorithm
     {
         public static void Main(string[] args)
         {
-            var graph1 = new AdjacencyList();
-            graph1.GenerationGraph(0.5, 20, 20);
-            Console.WriteLine('1');
+            var graph1 = new MatrixGraph(20, 0.5, 20);
+            graph1.PrintGraph();
         }
     }
 }
