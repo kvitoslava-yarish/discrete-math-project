@@ -53,5 +53,21 @@ namespace MPMAlgorithm
                 Console.Write("]\n");
             }
         }
-    }
+
+        public int EdgeNumber()
+        {
+            var count = 0;
+            for (var i = 0; i < _vertexNumber; i++)
+            {
+                for (var j = 0; j < _vertexNumber; j++)
+                {
+                    if (_matrix[i, j] != 0)
+                    {
+                        count += 1;
+                    }
+                }
+            }
+            return count;
+        }
+    } 
 }

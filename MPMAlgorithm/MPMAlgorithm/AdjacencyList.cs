@@ -64,5 +64,10 @@ namespace MPMAlgorithm
                 Console.WriteLine();
             }
         }
+
+        public int EdgeNumber()
+        {
+            return _adjacencyList.Sum(vertex => vertex.Value.Count);
+        }
     }
 }
