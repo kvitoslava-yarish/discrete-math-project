@@ -15,10 +15,8 @@ namespace MPMAlgorithm
         private Dictionary<int, long> _pout = new Dictionary<int, long>();
         private Dictionary<int, long> _level = new Dictionary<int, long>();
         private Dictionary<int, bool> _isActive = new Dictionary<int, bool>();
-        private Dictionary<int, long> _capacityOut = new Dictionary<int, long>();
-        private Dictionary<int, long> _capacityIn = new Dictionary<int, long>();
-        private List<List<int>> _inEdges, _outEdges;
-        private List<long> _excess;
+        private Dictionary<int, List<int>> _residualOut = new Dictionary<int, List<int>>();
+        private Dictionary<int, List<int>> _residualIn = new Dictionary<int, List<int>>();
 
 
         public MPM(AdjacencyList adjacencyList, int source, int t, int m)
@@ -42,6 +40,8 @@ namespace MPMAlgorithm
 
         private void InitializeGraph()
         {
+            _residualOut.Clear();
+            _residualIn.Clear();
             foreach (var v in _adjacencyList.GetKeys())
             {
                 if (_isActive[v])
@@ -49,11 +49,14 @@ namespace MPMAlgorithm
                     _pin[v] = 0;
                     _pout[v] = 0;
                     _level[v] = -1;
+                    _residualIn[v] = new List<int>();
+                    _residualOut[v] = new List<int>();
                 }
                 
             }
             _pin[_source] = _pout[_t] = long.MaxValue;
             _level[_source] = 0;
+            
         }
 // TODO Precalculate cap while initializing?
         private int GetCapacity(int v, int u)
@@ -78,7 +81,7 @@ namespace MPMAlgorithm
                 var currentV = vQueue.Dequeue();
                 foreach (var adjacentV in _adjacencyList.GetVertexes()[currentV])
                 {
-                    if (!visited.Contains(adjacentV[0])&& _isActive[adjacentV[0]])
+                    if (!visited.Contains(adjacentV[0]) && _isActive[adjacentV[0]])
                     {
                         _level[adjacentV[0]] =_level[currentV] + 1;
                         vQueue.Enqueue(adjacentV[0]);
@@ -111,7 +114,19 @@ namespace MPMAlgorithm
 
         private void Push(int from, int to,  long flow, bool forward)
         {
+            Queue<int> vertexQueue = new Queue<int>();
             
+            vertexQueue.Enqueue(from);
+            while (vertexQueue.Count > 0)
+            {
+                int currentVertex = vertexQueue.Dequeue();
+                if (currentVertex == to)
+                {
+                    break;
+                }
+
+            }
+
         }
         private int Flow()
         {
@@ -124,8 +139,52 @@ namespace MPMAlgorithm
                     break;
                 }
                 // todo clear in /out
+                // build resudusl graph
+              
+               
+// Calculate pin and pout for each vertex
+                foreach (var vertex in _adjacencyList._adjacencyList.Keys)
+                {
+                    _pin[vertex] = 0;
+                    _pout[vertex] = 0;
+                    foreach (var adjV in _adjacencyList._adjacencyList[vertex]) {
+                        var v = adjV[0];
+                        var cap = adjV[1];
+                        if (_level[v] == _level[vertex] + 1 && cap > 0) 
+                        {
+                            _residualOut[vertex].Add(v);
+                            _residualIn[v].Add(vertex);
+                            _pin[v] += cap;
+                            _pout[vertex] += cap;
+                        }
+                    }
+                }
             }
-
+            // pushes
+            while (true)
+            {
+                int vertex = -1;
+                foreach (int possibleVertex in _residualIn.Keys)
+                {
+                    if (!_isActive[possibleVertex] && Pot(vertex) < Pot(possibleVertex))
+                    {
+                        vertex = possibleVertex;
+                    }
+                }
+                if (vertex == -1)
+                {
+                    break;
+                }
+                if (Pot(vertex) == 0)
+                {
+                    RemoveNode(vertex);
+                    continue;
+                }
+                long flow = Pot(vertex);
+                maxFlow += flow;
+                // call pushes
+                RemoveNode(vertex);
+            }
             return 0;
         }
     }
