@@ -10,6 +10,7 @@ namespace MPMAlgorithm
         private Dictionary<int, List<int[]>> _adjacencyList;
         private int _s;
         private int _t;
+        private int _m;
         private Dictionary<int, long> _pin = new Dictionary<int, long>();
         private Dictionary<int, long> _pout = new Dictionary<int, long>();
         private Dictionary<int, long> _level = new Dictionary<int, long>();
@@ -17,11 +18,12 @@ namespace MPMAlgorithm
         private Dictionary<int, long> _capOut = new Dictionary<int, long>();
         private Dictionary<int, long> _capIn = new Dictionary<int, long>();
 
-        public MPM(Dictionary<int, List<int[]>> al, int s, int t)
+        public MPM(Dictionary<int, List<int[]>> al, int s, int t, int m)
         {
             _adjacencyList = al;
             _s = s;
             _t = t;
+            _m = m;
             InitializeGraph();
         }
 
@@ -37,7 +39,18 @@ namespace MPMAlgorithm
             _pin[_s] = _pout[_t] = long.MaxValue;
             _level[_s] = 0;
         }
-        
+// TODO Precalculate cap while initializing?
+        private int GetCap(int v, int u)
+        {
+            foreach (int[] adjV in _adjacencyList[v])
+            {
+                if (adjV[0] == u)
+                {
+                    return adjV[1];
+                }
+            }
+            return -1;
+        }
 
         private bool BFS()
         {
@@ -49,18 +62,18 @@ namespace MPMAlgorithm
                 int currentV = vQueue.Dequeue();
                 foreach (int[] adjacentV in _adjacencyList[currentV])
                 {
-                    if (!visited.Contains(adjacentV[0])&& _isActive[adjacentV[0]] == true)
+                    if (!visited.Contains(adjacentV[0])&& _isActive[adjacentV[0]])
                     {
-                        _level[adjacentV[0]] =_level[currentV];
+                        _level[adjacentV[0]] =_level[currentV] + 1;
                         vQueue.Enqueue(adjacentV[0]);
                     }
                 }
             }
-            if (!visited.Contains(_t))
+            if (visited.Contains(_t))
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
         
         private long Pot(int v)
@@ -68,7 +81,7 @@ namespace MPMAlgorithm
             return Math.Min(_pin[v], _pout[v]);
         }
 
-        void removeNode(int removeV)
+        private void RemoveNode(int removeV)
         {
             _adjacencyList.Remove(removeV);
             foreach (KeyValuePair<int,List<int[]>> v in _adjacencyList)
@@ -81,16 +94,27 @@ namespace MPMAlgorithm
                     }
                 }
             }
-
-            _isActive[removeV] = false;
+            _isActive[removeV] = false; // it's better to use isActive
         }
 
-        void push(int from, int to,  long f, bool forw)
+        private void push(int from, int to,  long f, bool forw)
         {
             
         }
-        int Flow()
+        private int Flow()
         {
+            long ans = 0;
+            while (true)
+            {
+                InitializeGraph();
+                if (!BFS())
+                {
+                    break;
+                }
+                // todo clear in /out
+                
+                
+            }
         }
     }
 
