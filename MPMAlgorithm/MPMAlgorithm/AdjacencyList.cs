@@ -6,7 +6,7 @@ namespace MPMAlgorithm
 {
     public class AdjacencyList // Подання графу у вигляді списків суміжності
     {
-        private Dictionary<int, List<int[]>> _adjacencyList = new Dictionary<int, List<int[]>>();
+        public Dictionary<int, List<int[]>> _adjacencyList = new Dictionary<int, List<int[]>>();
 
         private void AddVertex(int vertex)
         {
@@ -63,6 +63,20 @@ namespace MPMAlgorithm
                 }
                 Console.WriteLine();
             }
+        }
+
+        public List<int> GetKeys()
+        {
+            return _adjacencyList.Keys.ToList();
+        }
+        public List<List<int[]>> GetVertexes()
+        {
+            return _adjacencyList.Values.ToList();
+        }
+        
+        public List<int[]> GetValue(int index)
+        {
+            return _adjacencyList[index];
         }
     }
 }
