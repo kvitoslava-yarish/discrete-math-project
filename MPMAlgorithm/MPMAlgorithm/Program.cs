@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 
 
 namespace MPMAlgorithm
@@ -9,19 +10,37 @@ namespace MPMAlgorithm
         public static void Main(string[] args)
         {
             var graph1 = new AdjacencyList();
-            graph1.GenerationGraph(0.5, 200, 100);
-            var algorithm = new MPM(graph1, 0, 159);
-            graph1.PrintGraph();
+            var vertexNum = 20;
+            var possibility = 0.3;
+            var maxWeight = 100;
+            var result = new StringBuilder();
             var sw = new Stopwatch();
-            sw.Start();
-            var t = algorithm.MaxFlow();
-            sw.Stop();
             Console.WriteLine($"Elapsed time: {sw.Elapsed}");
-            Console.WriteLine(t);
-            string[] result = {$"{sw.Elapsed}, {200}, {100}, {0.5}" };
+            
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    for (int n = 1; n < 21; n++)
+                    {
+                        graph1.GenerationGraph(possibility, vertexNum, maxWeight);
+                        var algorithm = new MPM(graph1, 0, vertexNum - 1);
+ 
+                        sw.Start();
+                        var t = algorithm.MaxFlow();
+                        sw.Stop();
+                        result.Append($"{n}, {vertexNum}, {possibility.ToString().Replace(",", ".")}, {sw.Elapsed}\n");
+                    }
+
+                    possibility += 0.1;
+                }
+
+                possibility = 0.3;
+                vertexNum += 20;
+            }
             FileWork.WriteToCSV(
                 "C:\\Users\\pavlo\\RiderProjects\\discrete-math-project\\MPMAlgorithm\\MPMAlgorithm\\output.csv",
-                result);
+                result.ToString());
 
         }
         }
