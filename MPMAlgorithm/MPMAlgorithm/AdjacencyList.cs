@@ -72,9 +72,9 @@ namespace MPMAlgorithm
         {
             return _adjacencyList.Keys.ToList();
         }
-        public List<List<int[]>> GetVertexes()
+        public Array GetVertexes()
         {
-            return _adjacencyList.Values.ToList();
+            return _adjacencyList.Values.ToArray();
         }
         
         public List<int[]> GetValue(int index)
