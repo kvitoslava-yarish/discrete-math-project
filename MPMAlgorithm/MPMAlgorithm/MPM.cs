@@ -48,10 +48,10 @@ namespace MPMAlgorithm
                 {
                     _pin[v] = 0;
                     _pout[v] = 0;
-                    _level[v] = -1;
                     _residualIn[v] = new List<int>();
                     _residualOut[v] = new List<int>();
                 }
+                _level[v] = -1; // to set -1 level for inactive points to not use them in residual graph
                 
             }
             _pin[_source] = _pout[_t] = long.MaxValue;
@@ -112,18 +112,49 @@ namespace MPMAlgorithm
             _isActive[removeV] = false; // it's better to use isActive
         }
 
-        private void Push(int from, int to,  long flow, bool forward)
+        private void Push(int from, int to,  long flow, Dictionary<int, List<int>> residualGraph, bool direction) // true - to sink, false - to source
         {
             Queue<int> vertexQueue = new Queue<int>();
-            
+            Dictionary<int, long> excessiveFlow = new Dictionary<int, long>(); 
+            excessiveFlow[from] = flow;
             vertexQueue.Enqueue(from);
             while (vertexQueue.Count > 0)
             {
+                
                 int currentVertex = vertexQueue.Dequeue();
-                if (currentVertex == to)
+                long flowToPush = excessiveFlow[currentVertex];
+                if (currentVertex == to) { break; }
+                
+                foreach (int nextVertex in residualGraph[currentVertex])
                 {
-                    break;
+                    long canBePushed = Math.Min(flowToPush, GetCapacity(currentVertex, nextVertex));
+                    if (canBePushed == 0)
+                    {
+                        continue;
+                    }
+
+                    if (direction)
+                    {
+                        _pout[currentVertex] -= canBePushed;
+                        _pin[nextVertex] -= canBePushed;
+                    }
+                    else
+                    {
+                        _pout[nextVertex] -= canBePushed;
+                        _pin[currentVertex] -= canBePushed;
+                    }
+                    // update excessive flow
+                    if (!excessiveFlow.ContainsKey(nextVertex))
+                    {
+                        excessiveFlow[nextVertex] = 0;
+                    }
+                    excessiveFlow[nextVertex] += canBePushed;
+                    flowToPush -= canBePushed;
+
                 }
+                // todo update capacities in main adj list
+                // todo delete vertex from in/ out to remove edge with 0 cap
+             
 
             }
 
@@ -138,10 +169,7 @@ namespace MPMAlgorithm
                 {
                     break;
                 }
-                // todo clear in /out
-                // build resudusl graph
-              
-               
+                
 // Calculate pin and pout for each vertex
                 foreach (var vertex in _adjacencyList._adjacencyList.Keys)
                 {
@@ -150,7 +178,7 @@ namespace MPMAlgorithm
                     foreach (var adjV in _adjacencyList._adjacencyList[vertex]) {
                         var v = adjV[0];
                         var cap = adjV[1];
-                        if (_level[v] == _level[vertex] + 1 && cap > 0) 
+                        if (_level[v] == _level[vertex] + 1 && cap > 0 && _isActive[v]) 
                         {
                             _residualOut[vertex].Add(v);
                             _residualIn[v].Add(vertex);
