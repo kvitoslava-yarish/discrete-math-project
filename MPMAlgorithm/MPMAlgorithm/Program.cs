@@ -18,6 +18,12 @@ namespace MPMAlgorithm
             sw.Stop();
             Console.WriteLine($"Elapsed time: {sw.Elapsed}");
             Console.WriteLine(t);
+            string[] result = {$"{sw.Elapsed}, {200}, {100}, {0.5}" };
+            FileWork.WriteToCSV(
+                "C:\\Users\\pavlo\\RiderProjects\\discrete-math-project\\MPMAlgorithm\\MPMAlgorithm\\output.csv",
+                result);
+
+        }
         }
     }
-}
+
