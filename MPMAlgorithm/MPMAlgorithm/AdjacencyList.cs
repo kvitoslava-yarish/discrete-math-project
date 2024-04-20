@@ -44,14 +44,17 @@ namespace MPMAlgorithm
             }
         }
 
-        public void EditorEdge(int start, int destination, int flow)
+        public void EditorEdge(int start, int destination, int flow, bool forward)
         {
+            if (!forward)
+            {
+                (start, destination) = (destination, start);
+            }
             foreach (var edge in _adjacencyList[start].Where(edge => edge[0] == destination))
             {
                 edge[1] -= flow;
             }
         }
-
         public void PrintGraph()
         {
             foreach (var vertex in _adjacencyList)

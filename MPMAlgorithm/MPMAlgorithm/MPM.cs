@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace MPMAlgorithm
 {
@@ -59,8 +60,12 @@ namespace MPMAlgorithm
             
         }
 // TODO Precalculate cap while initializing?
-        private int GetCapacity(int v, int u)
+        private int GetCapacity(int v, int u, bool forward)
         {
+            if (!forward)
+            {
+                (v, u) = (u, v);
+            }
             foreach (var adjV in _adjacencyList.GetVertexes()[v])
             {
                 if (adjV[0] == u)
@@ -98,17 +103,6 @@ namespace MPMAlgorithm
 
         private void RemoveNode(int removeV)
         {
-            // _adjacencyList.Remove(removeV);
-            // foreach (var v in _adjacencyList)
-            // {
-            //     foreach (var adv in v.Value)
-            //     {
-            //         if (adv[0] == removeV)
-            //         {
-            //             v.Value.Remove(adv);
-            //         }
-            //     }
-            // }
             _isActive[removeV] = false; // it's better to use isActive
         }
 
@@ -127,7 +121,7 @@ namespace MPMAlgorithm
                 
                 foreach (int nextVertex in residualGraph[currentVertex])
                 {
-                    long canBePushed = Math.Min(flowToPush, GetCapacity(currentVertex, nextVertex));
+                    long canBePushed = Math.Min(flowToPush, GetCapacity(currentVertex, nextVertex,direction));
                     if (canBePushed == 0)
                     {
                         continue;
@@ -150,12 +144,37 @@ namespace MPMAlgorithm
                     }
                     excessiveFlow[nextVertex] += canBePushed;
                     flowToPush -= canBePushed;
+                    
+                    if (direction)
+                    {
+                        _adjacencyList.EditorEdge(currentVertex, nextVertex, (int)canBePushed, direction);
+                    }
+                    else
+                    {
+                        _adjacencyList.EditorEdge(nextVertex, currentVertex, (int)canBePushed, direction);
 
+                    }
+
+                    if (GetCapacity(currentVertex, nextVertex, direction) == 0)
+                    {
+                        if (direction)
+                        {
+                            _residualOut[currentVertex].Remove(nextVertex);
+                            _residualIn[nextVertex].Remove(currentVertex);
+                        }
+                        else
+                        {
+                            _residualOut[nextVertex].Remove(currentVertex);
+                            _residualIn[currentVertex].Remove(nextVertex);
+                        }
+                    }
+
+                    if (flowToPush == 0)
+                    {
+                        break;
+                    }
                 }
-                // todo update capacities in main adj list
-                // todo delete vertex from in/ out to remove edge with 0 cap
-             
-
+                
             }
 
         }
@@ -210,7 +229,8 @@ namespace MPMAlgorithm
                 }
                 long flow = Pot(vertex);
                 maxFlow += flow;
-                // call pushes
+                Push(vertex, _t, flow, _residualOut,true);
+                Push(vertex, _source, flow, _residualIn,false);
                 RemoveNode(vertex);
             }
             return 0;
