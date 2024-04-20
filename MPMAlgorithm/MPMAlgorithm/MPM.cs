@@ -11,7 +11,6 @@ namespace MPMAlgorithm
         private AdjacencyList _adjacencyList;
         private int _source;
         private int _t;
-        private int _m;
         private Dictionary<int, long> _pin = new Dictionary<int, long>();
         private Dictionary<int, long> _pout = new Dictionary<int, long>();
         private Dictionary<int, long> _level = new Dictionary<int, long>();
@@ -20,12 +19,11 @@ namespace MPMAlgorithm
         private Dictionary<int, List<int>> _residualIn = new Dictionary<int, List<int>>();
 
 
-        public MPM(AdjacencyList adjacencyList, int source, int t, int m)
+        public MPM(AdjacencyList adjacencyList, int source, int t)
         {
             _adjacencyList = adjacencyList;
             _source = source;
             _t = t;
-            _m = m;
             SetIsActive();
             InitializeGraph();
         }
@@ -178,7 +176,7 @@ namespace MPMAlgorithm
             }
 
         }
-        private int Flow()
+        public long Flow()
         {
             long maxFlow = 0;
             while (true)
@@ -206,34 +204,35 @@ namespace MPMAlgorithm
                         }
                     }
                 }
-            }
-            // pushes
-            while (true)
-            {
-                int vertex = -1;
-                foreach (int possibleVertex in _residualIn.Keys)
+                while (true)
                 {
-                    if (!_isActive[possibleVertex] && Pot(vertex) < Pot(possibleVertex))
+                    int vertex = -1;
+                    foreach (int possibleVertex in _residualIn.Keys)
                     {
-                        vertex = possibleVertex;
+                        if (!_isActive[possibleVertex] && Pot(vertex) < Pot(possibleVertex))
+                        {
+                            vertex = possibleVertex;
+                        }
                     }
-                }
-                if (vertex == -1)
-                {
-                    break;
-                }
-                if (Pot(vertex) == 0)
-                {
+                    if (vertex == -1)
+                    {
+                        break;
+                    }
+                    if (Pot(vertex) == 0)
+                    {
+                        RemoveNode(vertex);
+                        continue;
+                    }
+                    long flow = Pot(vertex);
+                    maxFlow += flow;
+                    Push(vertex, _t, flow, _residualOut,true);
+                    Push(vertex, _source, flow, _residualIn,false);
                     RemoveNode(vertex);
-                    continue;
                 }
-                long flow = Pot(vertex);
-                maxFlow += flow;
-                Push(vertex, _t, flow, _residualOut,true);
-                Push(vertex, _source, flow, _residualIn,false);
-                RemoveNode(vertex);
+                
             }
-            return 0;
+           
+            return maxFlow;
         }
     }
 }

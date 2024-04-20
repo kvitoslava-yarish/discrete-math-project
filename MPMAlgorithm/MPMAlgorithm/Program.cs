@@ -6,8 +6,11 @@ namespace MPMAlgorithm
     {
         public static void Main(string[] args)
         {
-            var graph1 = new MatrixGraph(20, 0.5, 20);
-            graph1.PrintGraph();
+            var graph1 = new AdjacencyList();
+            graph1.GenerationGraph(0.5,10 , 20);
+            var algorithm = new MPM(graph1, 0, 20);
+            algorithm.Flow();
+            Console.WriteLine(algorithm);
         }
     }
 }
