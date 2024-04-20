@@ -40,8 +40,7 @@ namespace MPMAlgorithm
            }
           
        }
-
-
+       
        private void InitializeGraph()
        {
            _residualOut.Clear();
@@ -132,7 +131,6 @@ namespace MPMAlgorithm
                    {
                        continue;
                    }
-
 
                    if (direction)
                    {
