@@ -18,8 +18,6 @@ namespace MPMAlgorithm
        private Dictionary<int, bool> _isActive = new Dictionary<int, bool>();
        private Dictionary<int, List<int>> _residualOut = new Dictionary<int, List<int>>();
        private Dictionary<int, List<int>> _residualIn = new Dictionary<int, List<int>>();
-       private Queue<int> _queue = new Queue<int>();
-       private HashSet<int> _visited = new HashSet<int>();
 
 
 
@@ -40,6 +38,7 @@ namespace MPMAlgorithm
            {
                _isActive[v] = true;
            }
+          
        }
 
 
@@ -83,22 +82,22 @@ namespace MPMAlgorithm
 
        private bool BFS()
        {
-           _visited.Clear();
-           _queue.Clear();
-           _queue.Enqueue(_source);
-           while (_queue.Count > 0)
+           var visited = new HashSet<int>();
+           var vQueue = new Queue<int>();
+           vQueue.Enqueue(_source);
+           while (vQueue.Count > 0)
            {
-               var currentV = _queue.Dequeue();
+               var currentV = vQueue.Dequeue();
                foreach (var adjacentV in _adjacencyList._adjacencyList[currentV])
                {
-                   if (!_visited.Contains(adjacentV[0]) && _isActive[adjacentV[0]])
+                   if (!visited.Contains(adjacentV[0]) && _isActive[adjacentV[0]])
                    {
                        _level[adjacentV[0]] =_level[currentV] + 1;
-                       _queue.Enqueue(adjacentV[0]);
+                       vQueue.Enqueue(adjacentV[0]);
                    }
                }
            }
-           return _visited.Contains(_t);
+           return visited.Contains(_t);
        }
       
        private int Pot(int v)
@@ -220,24 +219,28 @@ namespace MPMAlgorithm
                }
                while (true)
                {
-                   int vertex = -1;
+                   int vertex = new int();
+                   int minPot = -1;
+                   
                    foreach (int possibleVertex in _residualIn.Keys)
                    {
-                       if (!_isActive[possibleVertex] && Pot(vertex) < Pot(possibleVertex))
+                       int pot = Pot(possibleVertex);
+                       if (!_isActive[possibleVertex] && minPot < pot)
                        {
                            vertex = possibleVertex;
+                           minPot = pot;
                        }
                    }
-                   if (vertex == -1)
+                   if (minPot == -1)
                    {
                        break;
                    }
-                   if (Pot(vertex) == 0)
+                   if (minPot == 0)
                    {
                        RemoveNode(vertex);
                        continue;
                    }
-                   int flow = Pot(vertex);
+                   int flow = minPot;
                    maxFlow += flow;
                    Push(vertex, _t, flow, _residualOut,true);
                    Push(vertex, _source, flow, _residualIn,false);
