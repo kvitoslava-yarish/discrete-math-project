@@ -40,10 +40,17 @@
         <Reference Include="System.Xml"/>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="FileWork.cs" />
         <Compile Include="matrixGraph.cs" />
         <Compile Include="AdjacencyList.cs" />
+        <Compile Include="MPM.cs" />
+        <Compile Include="MPMMatrix.cs" />
         <Compile Include="Program.cs"/>
         <Compile Include="Properties\AssemblyInfo.cs"/>
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="outputList.csv" />
+      <Content Include="outputMatrix.csv" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
