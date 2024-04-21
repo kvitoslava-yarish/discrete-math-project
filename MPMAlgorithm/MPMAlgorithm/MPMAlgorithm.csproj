@@ -50,7 +50,8 @@
         <Compile Include="test.cs" />
     </ItemGroup>
     <ItemGroup>
-      <Content Include="output.csv" />
+      <Content Include="outputList.csv" />
+      <Content Include="outputMatrix.csv" />
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
     <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

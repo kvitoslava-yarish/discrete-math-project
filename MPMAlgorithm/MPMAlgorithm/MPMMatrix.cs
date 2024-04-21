@@ -28,7 +28,7 @@ namespace MPMAlgorithm
 
         private void SetActiveNodes()
         {
-            for (int node = 0; node < _graph.Matrix.GetLength(0); node++)
+            for (var node = 0; node < _graph.Matrix.GetLength(0); node++)
             {
                 _activeNodes[node] = true;
             }
@@ -38,7 +38,7 @@ namespace MPMAlgorithm
         {
             _residualGraphSource.Clear();
             _residualGraphSink.Clear();
-            for (int node = 0; node < _graph.Matrix.GetLength(0); node++)
+            for (var node = 0; node < _graph.Matrix.GetLength(0); node++)
             {
                 if (_activeNodes[node])
                 {
@@ -72,7 +72,7 @@ namespace MPMAlgorithm
             {
                 var currentNode = _queue.Dequeue();
                 
-                for(int i = 0; i < _graph.Matrix.GetLength(1); i++)
+                for(var i = 0; i < _graph.Matrix.GetLength(1); i++)
                 {
                     if(_graph.Matrix[currentNode, i] > 0 && !_visitedNodes.Contains(i) && _activeNodes[i])
                     {
@@ -181,14 +181,14 @@ namespace MPMAlgorithm
 
                 // Calculate excess flow for each node
 
-                for (int node = 0; node < _graph.Matrix.GetLength(0); node++)
+                for (var node = 0; node < _graph.Matrix.GetLength(0); node++)
                 {
                     _excessFlowSource[node] = 0;
                     _excessFlowSink[node] = 0;
                     
-                    for (int neighbor = 0; neighbor < _graph.Matrix.GetLength(0); neighbor++)
+                    for (var neighbor = 0; neighbor < _graph.Matrix.GetLength(0); neighbor++)
                     {
-                        int capacity = GetCapacity(node, neighbor, true);
+                        var capacity = GetCapacity(node, neighbor, true);
                         if (capacity > 0 && _levelByNode[neighbor] == _levelByNode[node] + 1 &&  _activeNodes[neighbor])
                         {
                             _residualGraphSource[node].Add(neighbor);
