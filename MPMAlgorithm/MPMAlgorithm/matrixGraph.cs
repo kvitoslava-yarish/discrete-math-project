@@ -4,7 +4,7 @@ namespace MPMAlgorithm
 {
     public class MatrixGraph
     {
-        private int[,] _matrix;
+        public int[,] Matrix { get; private set; }
         private int _vertexNumber;
         private Random _random;
         private int _maxWeight;
@@ -13,10 +13,11 @@ namespace MPMAlgorithm
         {
             _vertexNumber = vertexNumber;
             _random = new Random();
-            _matrix = new int[vertexNumber, vertexNumber];
+            Matrix = new int[vertexNumber, vertexNumber];
             _maxWeight = maxWeight;
             GenerateGraph(possibility, maxWeight);
         }
+        
 
         private void GenerateGraph(double possibility, int maxWeight)
         {
@@ -27,18 +28,23 @@ namespace MPMAlgorithm
                     var randomNum = _random.NextDouble();
                     if (randomNum > possibility || i == j)
                     {
-                        _matrix[i, j] = 0;
+                        Matrix[i, j] = 0;
                         continue;
                     }
                     var weight = _random.Next(1, maxWeight);
-                    _matrix[i, j] = weight;
+                    Matrix[i, j] = weight;
                 }
             }
         }
 
-        public void EditorEdges(int start, int destination, int flow)
+        public void EditEdges(int start, int destination, int flow, bool forward)
         {
-            _matrix[start, destination] -= flow;
+            
+            if (!forward)
+            {
+                (start, destination) = (destination, start);
+            }
+            Matrix[start, destination] -= flow;
         }
 
         public void PrintGraph()
@@ -48,7 +54,7 @@ namespace MPMAlgorithm
                 Console.Write("[ ");
                 for (var j = 0; j < _vertexNumber; j++)
                 {
-                    Console.Write($"{_matrix[i, j]} ");
+                    Console.Write($"{Matrix[i, j]} ");
                 }
                 Console.Write("]\n");
             }

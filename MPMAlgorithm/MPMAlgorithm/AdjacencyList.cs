@@ -4,29 +4,29 @@ using System.Linq;
 
 namespace MPMAlgorithm
 {
-    public class AdjacencyList // Подання графу у вигляді списків суміжності
+    public class AdjacencyListGraph // Подання графу у вигляді списків суміжності
     {
-        public Dictionary<int, List<int[]>> _adjacencyList = new Dictionary<int, List<int[]>>();
+        public Dictionary<int, List<int[]>> AdjacencyList { get; private set; } = new Dictionary<int, List<int[]>>();
 
         private void AddVertex(int vertex)
         {
-            if (!_adjacencyList.ContainsKey(vertex))
+            if (!AdjacencyList.ContainsKey(vertex))
             {
-                _adjacencyList[vertex] = new List<int[]>();
+                AdjacencyList[vertex] = new List<int[]>();
             }
         }
         private void AddEdge(int start, int destination, int weight)
         {
-            if (!_adjacencyList.ContainsKey(start))
+            if (!AdjacencyList.ContainsKey(start))
             {
                 AddVertex(start);
             }
 
-            if (!_adjacencyList.ContainsKey(destination))
+            if (!AdjacencyList.ContainsKey(destination))
             {
                 AddVertex(destination);
             }
-            _adjacencyList[start].Add(new int[] {destination, weight});
+            AdjacencyList[start].Add(new int[] {destination, weight});
         }
 
         public void GenerationGraph(double possibility, int vertexNumber, int maxWeight)
@@ -50,14 +50,14 @@ namespace MPMAlgorithm
             {
                 (start, destination) = (destination, start);
             }
-            foreach (var edge in _adjacencyList[start].Where(edge => edge[0] == destination))
+            foreach (var edge in AdjacencyList[start].Where(edge => edge[0] == destination))
             {
                 edge[1] -= flow;
             }
         }
         public void PrintGraph()
         {
-            foreach (var vertex in _adjacencyList)
+            foreach (var vertex in AdjacencyList)
             {
                 Console.Write($"Node {vertex.Key}: ");
                 foreach (var edge in vertex.Value)
@@ -70,16 +70,16 @@ namespace MPMAlgorithm
 
         public List<int> GetKeys()
         {
-            return _adjacencyList.Keys.ToList();
+            return AdjacencyList.Keys.ToList();
         }
         public Array GetVertexes()
         {
-            return _adjacencyList.Values.ToArray();
+            return AdjacencyList.Values.ToArray();
         }
         
         public List<int[]> GetValue(int index)
         {
-            return _adjacencyList[index];
+            return AdjacencyList[index];
         }
     }
 }

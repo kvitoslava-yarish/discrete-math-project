@@ -9,7 +9,7 @@ namespace MPMAlgorithm
     {
         public static void Main(string[] args)
         {
-            var graph1 = new AdjacencyList();
+            var graph1 = new AdjacencyListGraph();
             var vertexNum = 20;
             var possibility = 0.3;
             var maxWeight = 100;

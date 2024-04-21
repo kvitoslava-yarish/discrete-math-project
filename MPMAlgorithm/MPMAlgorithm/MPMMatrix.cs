@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace MPMAlgorithm
 {
-    public class MPM
+    public class MPMmatrix
     {
-        private AdjacencyListGraph _graph;
+        private MatrixGraph _graph;
         private int _sourceNode;
         private int _sinkNode;
         private Dictionary<int, int> _excessFlowSource = new Dictionary<int, int>();
@@ -17,28 +17,28 @@ namespace MPMAlgorithm
         private Queue<int> _queue = new Queue<int>();
         private List<int> _visitedNodes = new List<int>();
 
-        public MPM(AdjacencyListGraph adjacencyList, int source, int sink)
+        public MPMmatrix(MatrixGraph matrixGraph, int source, int sink)
         {
-            _graph = adjacencyList;
+            _graph = matrixGraph;
             _sourceNode = source;
             _sinkNode = sink;
             SetActiveNodes();
             InitializeGraph();
         }
-// todo matrix overload
+
         private void SetActiveNodes()
         {
-            foreach (var node in _graph.GetKeys())
+            for (int node = 0; node < _graph.Matrix.GetLength(0); node++)
             {
                 _activeNodes[node] = true;
             }
         }
-// todo matrix overload
+
         private void InitializeGraph()
         {
             _residualGraphSource.Clear();
             _residualGraphSink.Clear();
-            foreach (var node in _graph.GetKeys())
+            for (int node = 0; node < _graph.Matrix.GetLength(0); node++)
             {
                 if (_activeNodes[node])
                 {
@@ -53,23 +53,16 @@ namespace MPMAlgorithm
             _levelByNode[_sourceNode] = 0;
             Console.WriteLine("Graph initialized");
         }
-// todo matrix overload
         private int GetCapacity(int nodeFrom, int nodeTo, bool forward)
         {
             if (!forward)
             {
                 (nodeFrom, nodeTo) = (nodeTo, nodeFrom);
             }
-            foreach (var neighbor in _graph.AdjacencyList[nodeFrom])
-            {
-                if (neighbor[0] == nodeTo)
-                {
-                    return neighbor[1];
-                }
-            }
-            return -1;
+            
+            return _graph.Matrix[nodeFrom, nodeTo];
         }
-// todo matrix overload
+
         private bool Bfs()
         {
             _visitedNodes.Clear();
@@ -78,12 +71,13 @@ namespace MPMAlgorithm
             while (_queue.Count > 0)
             {
                 var currentNode = _queue.Dequeue();
-                foreach (var neighbor in _graph.AdjacencyList[currentNode])
+                
+                for(int i = 0; i < _graph.Matrix.GetLength(1); i++)
                 {
-                    if (!_visitedNodes.Contains(neighbor[0]) && _activeNodes[neighbor[0]])
+                    if(_graph.Matrix[currentNode, i] > 0 && !_visitedNodes.Contains(i) && _activeNodes[i])
                     {
-                        _levelByNode[neighbor[0]] = _levelByNode[currentNode] + 1;
-                        _queue.Enqueue(neighbor[0]);
+                        _levelByNode[i] = _levelByNode[currentNode] + 1;
+                        _queue.Enqueue(i);
                     }
                 }
                 _visitedNodes.Add(currentNode);
@@ -145,11 +139,11 @@ namespace MPMAlgorithm
 
                     if (toSink)
                     {
-                        _graph.EditorEdge(currentNode, nextNode, (int)canBePushed, toSink);
+                        _graph.EditEdges(currentNode, nextNode, (int)canBePushed, toSink);
                     }
                     else
                     {
-                        _graph.EditorEdge(nextNode, currentNode, (int)canBePushed, toSink);
+                        _graph.EditEdges(nextNode, currentNode, (int)canBePushed, toSink);
                     }
 
                     if (GetCapacity(currentNode, nextNode, toSink) == 0)
@@ -186,22 +180,25 @@ namespace MPMAlgorithm
                 }
 
                 // Calculate excess flow for each node
-                foreach (var node in _graph.AdjacencyList.Keys)
+
+                for (int node = 0; node < _graph.Matrix.GetLength(0); node++)
                 {
                     _excessFlowSource[node] = 0;
                     _excessFlowSink[node] = 0;
-                    foreach (var neighbor in _graph.AdjacencyList[node])
+                    
+                    for (int neighbor = 0; neighbor < _graph.Matrix.GetLength(0); neighbor++)
                     {
-                        var neighborNode = neighbor[0];
-                        var capacity = neighbor[1];
-                        if (_levelByNode[neighborNode] == _levelByNode[node] + 1 && capacity > 0 && _activeNodes[neighborNode])
+                        int capacity = GetCapacity(node, neighbor, true);
+                        if (capacity > 0 && _levelByNode[neighbor] == _levelByNode[node] + 1 &&  _activeNodes[neighbor])
                         {
-                            _residualGraphSource[node].Add(neighborNode);
-                            _residualGraphSink[neighborNode].Add(node);
-                            _excessFlowSource[neighborNode] += capacity;
+                            _residualGraphSource[node].Add(neighbor);
+                            _residualGraphSink[neighbor].Add(node);
+                            _excessFlowSource[neighbor] += capacity;
                             _excessFlowSink[node] += capacity;
                         }
+                    
                     }
+                    
                 }
 
                 while (true)
