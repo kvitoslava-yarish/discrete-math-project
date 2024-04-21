@@ -4,23 +4,15 @@ namespace MPMAlgorithm
 {
     public class MatrixGraph
     {
-        public int[,] Matrix { get; private set; }
+        public int[,] Matrix { get; set; } 
         private int _vertexNumber;
         private Random _random;
         private int _maxWeight;
-
-        public MatrixGraph(int vertexNumber, double possibility, int maxWeight)
-        {
-            _vertexNumber = vertexNumber;
-            _random = new Random();
-            Matrix = new int[vertexNumber, vertexNumber];
-            _maxWeight = maxWeight;
-            GenerateGraph(possibility, maxWeight);
-        }
         
 
-        private void GenerateGraph(double possibility, int maxWeight)
+        public void GenerateGraph(int vertexNumber, double possibility, int maxWeight)
         {
+            Matrix = new int[vertexNumber, vertexNumber];
             for (var i = 0; i < _vertexNumber; i++)
             {
                 for (var j = 0; j < _vertexNumber; j++)

@@ -25,7 +25,7 @@ namespace MPMAlgorithm
             SetActiveNodes();
             InitializeGraph();
         }
-// todo matrix overload
+
         private void SetActiveNodes()
         {
             foreach (var node in _graph.GetKeys())
@@ -33,7 +33,6 @@ namespace MPMAlgorithm
                 _activeNodes[node] = true;
             }
         }
-// todo matrix overload
         private void InitializeGraph()
         {
             _residualGraphSource.Clear();
@@ -53,7 +52,7 @@ namespace MPMAlgorithm
             _levelByNode[_sourceNode] = 0;
             Console.WriteLine("Graph initialized");
         }
-// todo matrix overload
+
         private int GetCapacity(int nodeFrom, int nodeTo, bool forward)
         {
             if (!forward)
@@ -69,7 +68,7 @@ namespace MPMAlgorithm
             }
             return -1;
         }
-// todo matrix overload
+// build level graph
         private bool Bfs()
         {
             _visitedNodes.Clear();
@@ -173,19 +172,21 @@ namespace MPMAlgorithm
                 }
             }
         }
-
+// main function
         public int MaxFlow()
         {
             var maxFlow = 0;
             while (true)
             {
+                
                 InitializeGraph();
+                // build level graph
                 if (!Bfs())
                 {
                     return maxFlow;
                 }
 
-                // Calculate excess flow for each node
+                // build residual graph
                 foreach (var node in _graph.AdjacencyList.Keys)
                 {
                     _excessFlowSource[node] = 0;
@@ -203,7 +204,7 @@ namespace MPMAlgorithm
                         }
                     }
                 }
-
+// find node with minimum potential (reference node)
                 while (true)
                 {
                     var blockNode = -1;
@@ -229,11 +230,12 @@ namespace MPMAlgorithm
                         DeactivateNode(blockNode);
                         continue;
                     }
-
+                    // push flow 
                     var flow = blockFlow;
                     maxFlow += flow;
                     PushFlow(blockNode, _sinkNode, flow, _residualGraphSource, true);
                     PushFlow(blockNode, _sourceNode, flow, _residualGraphSink, false);
+                    // delete reference node
                     DeactivateNode(blockNode);
                 }
             }
